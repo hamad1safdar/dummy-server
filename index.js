@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyparser = require("body-parser");
 const session = require("express-session");
+const path = require("path");
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.use(
 );
 
 app.get("/", (_req, res) => {
-  res.sendFile("Login.html", { root: __dirname });
+  res.sendFile(path.resolve(__dirname, "public", "login.html"));
 });
 
 app.post("/login", (req, res) => {
@@ -54,7 +55,7 @@ app.get("/profile", (req, res) => {
   const username = req.session.user;
   const user = users.find((user) => user.username === username);
   if (user) {
-    res.sendFile("Profile.html", { root: __dirname });
+    res.sendFile(path.resolve(__dirname, "public", "profile.html"));
   } else {
     res.send("User not found.");
   }
@@ -75,7 +76,7 @@ app.get("/session/check", (req, res) => {
 });
 
 app.get("/presenter", (_req, res) => {
-  res.sendFile("Presenter.html", { root: __dirname });
+  res.sendFile(path.resolve(__dirname, "public", "presenter.html"));
 });
 
 app.listen(PORT, () => {
