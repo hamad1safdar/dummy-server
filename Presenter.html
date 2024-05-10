@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Link Opener and Endpoint Poller</title>
+  </head>
+  <body>
+    <h1>Opening a Link in a New Tab and Polling an Endpoint</h1>
+    <button onclick="openLinkAndStartPolling()">Login</button>
+
+    <script>
+      let pollingIntervalId; // Variable to store interval ID
+
+      function openLinkAndStartPolling() {
+        const linkUrl = "http://localhost:3000";
+        const endpointUrl = "http://localhost:3000/session/check";
+
+        // Open link in new tab
+        const newTab = window.open(linkUrl, "_blank");
+        newTab.focus();
+
+        // Start polling endpoint
+        pollingIntervalId = setInterval(() => {
+          fetch(endpointUrl)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              if (data.authenticated) {
+                if (window.parent === window.top) {
+                  window.parent.postMessage({
+                    emumba: {
+                      message: "User has logged in!",
+                    },
+                  });
+                }
+                window.location.href = "/profile";
+                stopPolling();
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        }, 2000);
+      }
+
+      function stopPolling() {
+        clearInterval(pollingIntervalId);
+      }
+    </script>
+  </body>
+</html>
