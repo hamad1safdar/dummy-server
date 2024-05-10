@@ -13,8 +13,9 @@
       let pollingIntervalId; // Variable to store interval ID
 
       function openLinkAndStartPolling() {
-        const linkUrl = "http://localhost:3000";
-        const endpointUrl = "http://localhost:3000/session/check";
+        const linkUrl = "https://cookie-server-iota.vercel.app/";
+        const endpointUrl =
+          "https://cookie-server-iota.vercel.app/session/check";
 
         // Open link in new tab
         const newTab = window.open(linkUrl, "_blank");
@@ -38,7 +39,8 @@
                     },
                   });
                 }
-                window.location.href = "/profile";
+                window.location.href =
+                  "https://cookie-server-iota.vercel.app/profile";
                 stopPolling();
               }
             })
