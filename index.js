@@ -17,7 +17,7 @@ app.use(bodyparser.json());
 app.use(
   session({
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: false,
     secret: "secret",
     cookie: {
       httpOnly: true,
@@ -31,6 +31,22 @@ app.use(
 app.get("/", (_req, res) => {
   res.sendFile(path.resolve(__dirname, "public", "login.html"));
 });
+
+app.get("/presenter", (_req, res) => {
+  res.sendFile(path.resolve(__dirname, "public", "presenter.html"));
+});
+
+app.get("/profile", (req, res) => {
+  const username = req.session.user;
+  const user = users.find((user) => user.username === username);
+  if (user) {
+    res.sendFile(path.resolve(__dirname, "public", "profile.html"));
+  } else {
+    res.send("User not found.");
+  }
+});
+
+// api
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
@@ -51,16 +67,6 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.get("/profile", (req, res) => {
-  const username = req.session.user;
-  const user = users.find((user) => user.username === username);
-  if (user) {
-    res.sendFile(path.resolve(__dirname, "public", "profile.html"));
-  } else {
-    res.send("User not found.");
-  }
-});
-
 app.get("/session/check", (req, res) => {
   if (req.session.user) {
     res.json({
@@ -75,8 +81,13 @@ app.get("/session/check", (req, res) => {
   }
 });
 
-app.get("/presenter", (_req, res) => {
-  res.sendFile(path.resolve(__dirname, "public", "presenter.html"));
+app.get("/logout", (req, res) => {
+  req.session.user = null;
+  req.session.save(() => {
+    req.session.regenerate(() => {
+      res.sendStatus(200);
+    });
+  });
 });
 
 app.listen(PORT, () => {
